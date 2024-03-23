@@ -1,0 +1,17 @@
+footer {
+    color: var(--footer-color);
+    padding: 17px 0px;
+    border-top: 1px solid var(--line-color);
+}
+
+footer .content {
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    max-width: 700px;
+    padding: 0px 4.72vw;
+}
+
+.content a {
+    color: var(--footer-color);
+}
