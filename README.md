@@ -11,11 +11,13 @@ You can choose your university group and subgroup by clicking on the correspondi
 
 ## 🖥 Development server
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. <br>
+The application will automatically reload if you change any of the source files.
 
 ## 🛠 Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+Run `ng build` to build the project. <br>
+The build artifacts will be stored in the `dist/` directory.
 
 ## 📷 Screenshots
 
