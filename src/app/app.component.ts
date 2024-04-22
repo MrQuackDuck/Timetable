@@ -14,7 +14,7 @@ export class AppComponent {
 
   isNumerator : boolean;
 
-  displayTimetablesForNextWeek : boolean;
+  displayTimetableForNextWeek : boolean;
 
   mondayTimetable : string[];
   saturdayTimetable : string[];
@@ -22,16 +22,25 @@ export class AppComponent {
   today : Date = new Date();
 
   ngOnInit() {
-    let educationStartDate : Date = new Date(2024, 1, 12);
+    let educationStartDate : Date = new Date(2024, 1, 12, -1);
+
+    // If weeks count since education start date is even, schedule is set by numerator then
     if (this.getWeeksSinceDate(educationStartDate) % 2 == 0) this.isNumerator = true;
+    // If no, then education is set by denumerator
     else this.isNumerator = false;
 
-    if (this.today.getDay() < 1) this.isNumerator = !this.isNumerator;
+    // If today's day is Sunday, show timetable for the next week
+    if (this.today.getDay() == 0) this.displayTimetableForNextWeek = true;
 
+    // If there is need to show timetable for the next wekk
+    if (this.displayTimetableForNextWeek) this.isNumerator = !this.isNumerator;
+
+    // Set default values for schedule
     this.setGroup("KNMS-22");
     this.setSubgroup(1);
   }
 
+  // Usage example: Get the next date of Monday
   getNextDateOfDay(targetDay: number): Date {
     const currentDate = new Date(this.today);
     const currentDay = currentDate.getDay();
@@ -63,12 +72,16 @@ export class AppComponent {
     this.updateData();
   }
 
+  // Updates variables with schedule data
+  // These variables are being displayed in UI
   updateData() {
-    if (this.isNumerator) {
+    if (this.isNumerator) 
+    {
       this.mondayTimetable = data[this.currentGroup][`Subgroup-${this.currentSubgroup}`].Monday.Numerator;
       this.saturdayTimetable = data[this.currentGroup][`Subgroup-${this.currentSubgroup}`].Saturday.Numerator;
-    } 
-    else {
+    }
+    else
+    {
       this.mondayTimetable = data[this.currentGroup][`Subgroup-${this.currentSubgroup}`].Monday.Denumerator;
       this.saturdayTimetable = data[this.currentGroup][`Subgroup-${this.currentSubgroup}`].Saturday.Denumerator;
     }
