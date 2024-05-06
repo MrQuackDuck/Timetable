@@ -24,7 +24,7 @@ export class AppComponent {
   ngOnInit() {
     let educationStartDate : Date = new Date(2024, 1, 12, -1);
 
-    // If weeks count since education start date is even, schedule is set by numerator then
+    // If weeks count since education start is even, schedule is set by numerator
     if (this.getWeeksSinceDate(educationStartDate) % 2 == 0) this.isNumerator = true;
     // If no, then education is set by denumerator
     else this.isNumerator = false;
@@ -32,14 +32,15 @@ export class AppComponent {
     // If today's day is Sunday, show timetable for the next week
     if (this.today.getDay() == 0) this.displayTimetableForNextWeek = true;
 
-    // If there is need to show timetable for the next wekk
+    // If there is need to show timetable for the next week
     if (this.displayTimetableForNextWeek) this.isNumerator = !this.isNumerator;
 
-    // Set default values for schedule
+    // Set default values for the schedule
     this.setGroup("KNMS-22");
     this.setSubgroup(1);
   }
 
+  // Gets the next date of certain day
   // Usage example: Get the next date of Monday
   getNextDateOfDay(targetDay: number): Date {
     const currentDate = new Date(this.today);
@@ -49,9 +50,12 @@ export class AppComponent {
     return targetDate;
   }
 
+  // Gets weeks since certain date
   getWeeksSinceDate(customDate: Date): number {
     const currentDate = new Date(this.today);
-    const millisecondsPerWeek = 7 * 24 * 60 * 60 * 1000; // Number of milliseconds in a week
+    
+    // Number of milliseconds in a week
+    const millisecondsPerWeek = 7 * 24 * 60 * 60 * 1000;
 
     // Calculate the difference in milliseconds between the current date and the custom date
     const timeDifference = currentDate.getTime() - customDate.getTime();
