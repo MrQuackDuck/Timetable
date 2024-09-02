@@ -2,33 +2,31 @@
   <main>
       <div class="controls">
           <div class="buttons">
-              <button (click)="setGroup('KNMS-22')" [ngClass]="{'active': currentGroup == 'KNMS-22'}">КНМС-22</button>
-              <button (click)="setGroup('KNMS-21')" [ngClass]="{'active': currentGroup == 'KNMS-21'}">КНМС-21</button>
-          </div>
-          
-          <div class="buttons">
-            <button (click)="setSubgroup(1)" [ngClass]="{'active': currentSubgroup == 1}">Підгрупа I</button>
-            <button (click)="setSubgroup(2)" [ngClass]="{'active': currentSubgroup == 2}">Підгрупа II</button>
+              <button *ngFor="let item of getGroupsList()"
+                (click)="setGroup(item)"
+                [ngClass]="{'active': currentGroup == item}">
+                {{ item }}
+              </button>
           </div>
       </div>
 
       <div class="container">
         <span>Сьогодні <u>{{ today.getDate() }} {{ today | monthName }}</u>.</span>
-          <div *ngIf="today.getDate() <= getNextDateOfDay(1).getDate() || today.getMonth() < getNextDateOfDay(1).getMonth()" class="timetable">
-              <span>Розклад на <b>понеділок</b> (<u>{{ getNextDateOfDay(1).getDate() }} {{ getNextDateOfDay(1) | monthName }}</u>):</span>
+          <ng-container *ngFor="let schedule of getSchedules()">
+            <div *ngIf="today.getDay() <= schedule.DayIndex" class="timetable">
+              <span>Розклад на <b>{{ schedule.Day }}</b> (<u>{{ getNextDateOfDay(schedule.DayIndex).getDate() }} {{ getNextDateOfDay(schedule.DayIndex) | monthName }}</u>):</span>
               <hr>
-              <span class="timetable-strings">
-                <span [innerHTML]="(str | formatText | safeHtml)" *ngFor="let str of mondayTimetable"></span>
+              <!-- In case when the schedule is currently goes by numerator -->
+              <span *ngIf="isNumeratorForDay(schedule.DayIndex)" class="timetable-strings">
+                <span [innerHTML]="(str | formatText | safeHtml)" *ngFor="let str of schedule.ScheduleByNumerator"></span>
               </span>
-          </div>
-
-          <div class="timetable">
-            <span>Розклад на <b>суботу</b> (<u>{{ getNextDateOfDay(6).getDate() }} {{ getNextDateOfDay(6) | monthName }}</u>):</span>
-              <hr>
-              <span class="timetable-strings">
-                <span [innerHTML]="(str | formatText | safeHtml)" *ngFor="let str of saturdayTimetable"></span>
+              
+              <!-- In case when the schedule is currently goes by denuminator -->
+              <span *ngIf="!isNumeratorForDay(schedule.DayIndex)" class="timetable-strings">
+                <span [innerHTML]="(str | formatText | safeHtml)" *ngFor="let str of schedule.ScheduleByDenominator"></span>
               </span>
-          </div>
+            </div>
+          </ng-container>
       </div>
   </main>
   <app-footer></app-footer>

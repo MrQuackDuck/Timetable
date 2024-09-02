@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-const data = require('../data.json');
+import { SchedulePerDay } from './models/schedulePerDay';
+const data = require('../data.json') as SchedulePerDay[];
 
 declare var require: any
 
@@ -10,24 +11,21 @@ declare var require: any
 })
 export class AppComponent {
   currentGroup : string;
-  currentSubgroup : number = 1;
-
   isNumerator : boolean;
-
   displayTimetableForNextWeek : boolean;
-
-  mondayTimetable : string[];
-  saturdayTimetable : string[];
-
+  schedules: SchedulePerDay[] = data;
   today : Date = new Date();
 
   ngOnInit() {
-    let educationStartDate : Date = new Date(2024, 1, 12, -1);
+    let educationStartDate : Date = new Date(2024, 8, 1);
+
+    // Calculate the number of weeks since education start date
+    const weeksSinceStart = this.getWeeksSinceDate(educationStartDate);
+    console.log(weeksSinceStart)
 
     // If weeks count since education start is even, schedule is set by numerator
-    if (this.getWeeksSinceDate(educationStartDate) % 2 == 0) this.isNumerator = true;
     // If no, then education is set by denumerator
-    else this.isNumerator = false;
+    this.isNumerator = weeksSinceStart % 2 !== 0;
 
     // If today's day is Sunday, show timetable for the next week
     if (this.today.getDay() == 0) this.displayTimetableForNextWeek = true;
@@ -36,8 +34,15 @@ export class AppComponent {
     if (this.displayTimetableForNextWeek) this.isNumerator = !this.isNumerator;
 
     // Set default values for the schedule
-    this.setGroup("KNMS-22");
-    this.setSubgroup(1);
+    this.setGroup("КНМС-32");
+  }
+
+  isNumeratorForDay(dayIndex: number): boolean {
+    if (dayIndex > 7) {
+      return !this.isNumerator;
+    }
+
+    return this.isNumerator;
   }
 
   // Gets the next date of certain day
@@ -68,26 +73,28 @@ export class AppComponent {
 
   setGroup(group : string) {
     this.currentGroup = group;
-    this.updateData();
   }
 
-  setSubgroup(subgroup : number) {
-    this.currentSubgroup = subgroup;
-    this.updateData();
+  getSchedules(): SchedulePerDay[] {
+    return [...this.getSchedulesForCurrentWeek(), ...this.getSchedulesForNextWeek()].sort((a, b) => a.DayIndex - b.DayIndex);
   }
 
-  // Updates variables with schedule data
-  // These variables are being displayed in UI
-  updateData() {
-    if (this.isNumerator) 
-    {
-      this.mondayTimetable = data[this.currentGroup][`Subgroup-${this.currentSubgroup}`].Monday.Numerator;
-      this.saturdayTimetable = data[this.currentGroup][`Subgroup-${this.currentSubgroup}`].Saturday.Numerator;
+  getSchedulesForCurrentWeek(): SchedulePerDay[] {
+    return data.filter(x => x.Group == this.currentGroup && x.DayIndex >= this.today.getDay());
+  }
+
+  getSchedulesForNextWeek(): SchedulePerDay[] {
+    let schedulesForCurrentWeek = this.getSchedulesForCurrentWeek();
+    if (schedulesForCurrentWeek.length < data.filter(x => x.Group == this.currentGroup).length) {
+      let dataToReturn = [...data.filter(x => x.Group == this.currentGroup && x.DayIndex < this.today.getDay())];
+      dataToReturn.forEach(x => x.DayIndex += 7);
+      return dataToReturn;
     }
-    else
-    {
-      this.mondayTimetable = data[this.currentGroup][`Subgroup-${this.currentSubgroup}`].Monday.Denumerator;
-      this.saturdayTimetable = data[this.currentGroup][`Subgroup-${this.currentSubgroup}`].Saturday.Denumerator;
-    }
+
+    return [];
+  }
+
+  getGroupsList(): string[] {
+    return [...new Set(data.map(x => x.Group))];
   }
 }
