@@ -12,7 +12,6 @@ declare var require: any
 export class AppComponent {
   currentGroup : string;
   isNumerator : boolean;
-  displayTimetableForNextWeek : boolean;
   schedules: SchedulePerDay[] = data;
   today : Date = new Date();
 
@@ -21,24 +20,17 @@ export class AppComponent {
 
     // Calculate the number of weeks since education start date
     const weeksSinceStart = this.getWeeksSinceDate(educationStartDate);
-    console.log(weeksSinceStart)
 
     // If weeks count since education start is even, schedule is set by numerator
     // If no, then education is set by denumerator
     this.isNumerator = weeksSinceStart % 2 !== 0;
-
-    // If today's day is Sunday, show timetable for the next week
-    if (this.today.getDay() == 0) this.displayTimetableForNextWeek = true;
-
-    // If there is need to show timetable for the next week
-    if (this.displayTimetableForNextWeek) this.isNumerator = !this.isNumerator;
 
     // Set default values for the schedule
     this.setGroup("КНМС-32");
   }
 
   isNumeratorForDay(dayIndex: number): boolean {
-    if (dayIndex > 7) {
+    if (dayIndex > 7 && this.getTodayDayIndex() != 7) {
       return !this.isNumerator;
     }
 
@@ -49,7 +41,7 @@ export class AppComponent {
   // Usage example: Get the next date of Monday
   getNextDateOfDay(targetDay: number): Date {
     const currentDate = new Date(this.today);
-    const currentDay = currentDate.getDay();
+    const currentDay = this.getTodayDayIndex();
     const difference = targetDay - currentDay;
     const targetDate = new Date(currentDate.getTime() + difference * 24 * 60 * 60 * 1000);
     return targetDate;
@@ -75,18 +67,18 @@ export class AppComponent {
     this.currentGroup = group;
   }
 
-  getSchedules(): SchedulePerDay[] {
+  getAllSchedules(): SchedulePerDay[] {
     return [...this.getSchedulesForCurrentWeek(), ...this.getSchedulesForNextWeek()].sort((a, b) => a.DayIndex - b.DayIndex);
   }
 
   getSchedulesForCurrentWeek(): SchedulePerDay[] {
-    return data.filter(x => x.Group == this.currentGroup && x.DayIndex >= this.today.getDay());
+    return data.filter(x => x.Group == this.currentGroup && x.DayIndex >= this.getTodayDayIndex());
   }
 
   getSchedulesForNextWeek(): SchedulePerDay[] {
     let schedulesForCurrentWeek = this.getSchedulesForCurrentWeek();
     if (schedulesForCurrentWeek.length < data.filter(x => x.Group == this.currentGroup).length) {
-      let dataToReturn = [...data.filter(x => x.Group == this.currentGroup && x.DayIndex < this.today.getDay())];
+      let dataToReturn = [...data.filter(x => x.Group == this.currentGroup && x.DayIndex < this.getTodayDayIndex())];
       dataToReturn.forEach(x => x.DayIndex += 7);
       return dataToReturn;
     }
@@ -96,5 +88,12 @@ export class AppComponent {
 
   getGroupsList(): string[] {
     return [...new Set(data.map(x => x.Group))];
+  }
+
+  // Method to get the today's day index (in order to make Monday as 1st day and Sunday as 7th)
+  getTodayDayIndex(): number {
+    let dayIndex = this.today.getDay();
+    if (dayIndex == 0) return 7;
+    return dayIndex;
   }
 }

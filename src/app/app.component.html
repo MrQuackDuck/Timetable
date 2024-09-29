@@ -12,8 +12,8 @@
 
       <div class="container">
         <span>Сьогодні <u>{{ today.getDate() }} {{ today | monthName }}</u>.</span>
-          <ng-container *ngFor="let schedule of getSchedules()">
-            <div *ngIf="today.getDay() <= schedule.DayIndex" class="timetable">
+          <ng-container *ngFor="let schedule of getAllSchedules()">
+            <div *ngIf="getTodayDayIndex() <= schedule.DayIndex" class="timetable">
               <span>Розклад на <b>{{ schedule.Day }}</b> (<u>{{ getNextDateOfDay(schedule.DayIndex).getDate() }} {{ getNextDateOfDay(schedule.DayIndex) | monthName }}</u>):</span>
               <hr>
               <!-- In case when the schedule is currently goes by numerator -->
