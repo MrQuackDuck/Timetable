@@ -21,9 +21,9 @@ export class AppComponent {
     // Calculate the number of weeks since education start date
     const weeksSinceStart = this.getWeeksSinceDate(educationStartDate);
 
-    // If weeks count since education start is even, schedule is set by denumerator
-    // If no, then education is set by numerator
-    this.isNumerator = weeksSinceStart % 2 == 0;
+    // If weeks count since education start is even, schedule is set by numerator
+    // If no, then education is set by denumerator
+    this.isNumerator = weeksSinceStart % 2 !== 0;
 
     // Set default values for the schedule
     this.setGroup("КНМС-41 II");
