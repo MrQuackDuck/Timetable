@@ -30,10 +30,9 @@ export class AppComponent {
   }
 
   isNumeratorForDay(dayIndex: number): boolean {
-    if (dayIndex > 7 && this.getTodayDayIndex() != 7) {
+    if (dayIndex > 7) {
       return !this.isNumerator;
     }
-
     return this.isNumerator;
   }
 
