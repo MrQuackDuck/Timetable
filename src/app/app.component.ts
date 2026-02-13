@@ -16,13 +16,13 @@ export class AppComponent {
   today : Date = new Date();
 
   ngOnInit() {
-    let educationStartDate : Date = new Date(2025, 8, 1);
+    let educationStartDate : Date = new Date(2026, 1, 16);
 
     // Calculate the number of weeks since education start date
     const weeksSinceStart = this.getWeeksSinceDate(educationStartDate);
 
     // If weeks count since education start is even, schedule is set by numerator
-    // If no, then education is set by denumerator
+    // If odd, then education is set by denumerator
     this.isNumerator = weeksSinceStart % 2 !== 0;
 
     // Set default values for the schedule
